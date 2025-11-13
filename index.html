@@ -67,11 +67,22 @@
             box-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
         }
 
+        /* --- UPDATED: Tag Filter Styles --- */
+        .tag-filter {
+            flex: 1; /* Allow the container to grow */
+            display: flex;
+            flex-wrap: wrap; /* This is the key property to allow wrapping */
+            align-items: center;
+            gap: 8px; /* Controls spacing between and below buttons */
+            min-width: 200px; /* Ensure it has some minimum width */
+        }
+
         .tag-filter button {
             padding: 8px 15px; border: 1px solid var(--border-color);
             border-radius: 15px; font-size: 14px; cursor: pointer;
             background-color: var(--secondary-color); color: var(--text-color);
-            margin: 0 5px; transition: all 0.3s ease;
+            /* margin is no longer needed, gap property on parent handles it */
+            transition: all 0.3s ease;
         }
 
         .tag-filter button:hover { background-color: var(--hover-bg-color); }
@@ -178,7 +189,7 @@
             
             .controls { flex-direction: column; align-items: stretch; }
             .search-box { width: auto; }
-            .tag-filter { text-align: center; }
+            .tag-filter { justify-content: center; } /* Center the tags on mobile */
 
             table thead { display: none; }
             table, tbody, tr, td { display: block; width: 100%; box-sizing: border-box; }
@@ -200,6 +211,7 @@
             td::before {
                 content: attr(data-label); font-weight: bold;
                 margin-right: 10px; color: var(--text-muted-color);
+                white-space: nowrap;
             }
             
             td[data-label="图片"] { display: block; text-align: center; padding-bottom: 15px; }
@@ -212,7 +224,6 @@
             }
             td[data-label="名称"]::before { display: none; }
 
-            /* NEW: Styles for comment alignment without extra div */
             td[data-label^="制作"], td[data-label^="剧情"], td[data-label^="角色"] {
                 align-items: flex-start;
             }
@@ -325,16 +336,15 @@
                 const adjHTML = `<p><strong>争议内容:</strong> ${adj.controversy||'无'}</p><p><strong>内核深度:</strong> ${adj.depth||'无'}</p><p><strong>社会影响:</strong> ${adj.impact||'无'}</p><p><strong>艺术表达:</strong> ${adj.artistry||'无'}</p>`;
 
                 const row = document.createElement('tr');
-                // FIXED: Removed the extra <div> wrapper around some content for better compatibility
                 row.innerHTML = `
                     <td data-label="图片"><img src="${anime.image}" alt="${anime.name}" class="anime-img"></td>
                     <td data-label="名称">${anime.name}</td>
-                    <td data-label="个人评分"><span class="score" onclick='showModal("${anime.name} - 个人评价", "<p>${anime.personalEvaluation.replace(/"/g, '&quot;')}</p>")'>${anime.personalScore}</span></td>
+                    <td data-label="个人评分"><span class="score" onclick='showModal("${anime.name.replace(/"/g, '&quot;')} - 个人评价", "<p>${anime.personalEvaluation.replace(/"/g, '&quot;')}</p>")'>${anime.personalScore}</span></td>
                     <td data-label="制作(30%)"><div><strong>${anime.recommendation.production}</strong><div class="details-comment">${anime.recommendation.productionComment}</div></div></td>
                     <td data-label="剧情(40%)"><div><strong>${anime.recommendation.plot}</strong><div class="details-comment">${anime.recommendation.plotComment}</div></div></td>
                     <td data-label="角色(30%)"><div><strong>${anime.recommendation.character}</strong><div class="details-comment">${anime.recommendation.characterComment}</div></div></td>
                     <td data-label="推荐总分"><strong>${recScore}</strong></td>
-                    <td data-label="修正分数"><span class="score" onclick='showModal("${anime.name} - 分数修正详情", ${JSON.stringify(adjHTML)})'>${adj.score > 0 ? '+' : ''}${adj.score}</span></td>
+                    <td data-label="修正分数"><span class="score" onclick='showModal("${anime.name.replace(/"/g, '&quot;')} - 分数修正详情", ${JSON.stringify(adjHTML)})'>${adj.score > 0 ? '+' : ''}${adj.score}</span></td>
                     <td data-label="最终得分"><strong>${finalScore}</strong></td>
                     <td data-label="标签"><div class="tags">${anime.tags.map(tag => `<span>${tag}</span>`).join(' ')}</div></td>
                     <td data-label="时间">${anime.date}</td>
@@ -346,7 +356,11 @@
         }
         
         function renderTagFilters() {
-            tagFilterContainer.innerHTML = '<span>筛选标签: </span>';
+            // Clear previous buttons but keep the span
+            const span = tagFilterContainer.querySelector('span');
+            tagFilterContainer.innerHTML = '';
+            if (span) tagFilterContainer.appendChild(span);
+
             const allTags = [...new Set(animeData.flatMap(a => a.tags))];
             allTags.forEach(tag => {
                 const button = document.createElement('button');
@@ -382,7 +396,7 @@
             });
         }
         
-        // Media Controls Logic (Unchanged)
+        // Media Controls Logic
         let currentBgIndex = 0, bgInterval, currentTrackIndex = 0;
         const audio = document.getElementById('backgroundMusic');
         const playPauseBtn = document.getElementById('playPauseBtn');
@@ -425,7 +439,6 @@
 
         // --- INITIAL LOAD ---
         document.addEventListener('DOMContentLoaded', () => {
-            // FIXED: Event listeners are now safely attached after the DOM is fully loaded.
             document.querySelectorAll('#animeTable th[data-sort]').forEach(header => {
                 header.addEventListener('click', () => sortTable(header.dataset.sort));
             });
