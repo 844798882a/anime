@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>动漫评分殿堂</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #1a1a2e;
+            --primary-color: #16213e;
+            --secondary-color: #0f3460;
+            --accent-color: #e94560;
+            --text-color: #dcdcdc;
+            --text-muted-color: #a0a0a0;
+            --border-color: #2a2a4a;
+            --hover-bg-color: #1f2b4e;
+        }
+
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            margin: 0;
+            padding: 40px 20px;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            transition: background-image 1.5s ease-in-out;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: auto;
+            background: rgba(22, 33, 62, 0.9);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid var(--border-color);
+            animation: fadeInSlideUp 0.8s ease-out forwards;
+        }
+
+        @keyframes fadeInSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            text-align: center;
+            color: #fff;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 30px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .search-box {
+            padding: 10px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 16px;
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            width: 250px;
+            transition: all 0.3s ease;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--accent-color);
+            box-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
+        }
+
+        .tag-filter button {
+            padding: 8px 15px;
+            border: 1px solid var(--border-color);
+            border-radius: 15px;
+            font-size: 14px;
+            cursor: pointer;
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+            margin: 0 5px;
+            transition: all 0.3s ease;
+        }
+
+        .tag-filter button:hover {
+            background-color: var(--hover-bg-color);
+        }
+
+        .tag-filter button.active {
+            background-color: var(--accent-color);
+            color: #fff;
+            border-color: var(--accent-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.95em;
+        }
+
+        th, td {
+            padding: 12px 10px;
+            border-bottom: 1px solid var(--border-color);
+            text-align: left;
+            vertical-align: middle;
+        }
+
+        th {
+            background-color: rgba(15, 52, 96, 0.5);
+            cursor: pointer;
+            user-select: none;
+            white-space: nowrap;
+            font-weight: 400;
+        }
+        
+        tr {
+            transition: all 0.2s ease-out;
+        }
+
+        tbody tr:hover {
+            background-color: var(--hover-bg-color);
+            transform: scale(1.01);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.4);
+            z-index: 10;
+            position: relative;
+        }
+        
+        th .sort-indicator {
+            float: right;
+            margin-left: 5px;
+            color: var(--text-muted-color);
+        }
+        
+        th.sorted-asc .sort-indicator,
+        th.sorted-desc .sort-indicator {
+            color: #fff;
+        }
+
+        .anime-img {
+            width: 70px;
+            height: 105px;
+            object-fit: cover;
+            border-radius: 6px;
+            display: block;
+            margin: auto;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+        }
+
+        .score {
+            font-weight: 700;
+            font-size: 1.1em;
+            cursor: pointer;
+            color: #61dafb;
+            text-decoration: none;
+            display: inline-block;
+            transition: color 0.3s;
+        }
+        .score:hover {
+            color: var(--accent-color);
+            text-shadow: 0 0 8px var(--accent-color);
+        }
+        
+        td strong {
+             font-size: 1.1em;
+             font-weight: 700;
+        }
+
+        .tags span {
+            background-color: var(--secondary-color);
+            padding: 4px 10px;
+            border-radius: 12px;
+            margin: 2px;
+            font-size: 0.85em;
+            display: inline-block;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.7);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.4s;
+        }
+
+        .modal-content {
+            background-color: var(--primary-color);
+            color: var(--text-color);
+            margin: 12% auto;
+            padding: 25px;
+            border: 1px solid var(--border-color);
+            width: 80%;
+            max-width: 550px;
+            border-radius: 10px;
+            position: relative;
+            animation: slideIn 0.4s;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+        @keyframes slideIn { from {transform: translateY(-50px);} to {transform: translateY(0);} }
+
+        .close-btn {
+            color: #aaa;
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 32px;
+            font-weight: bold;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover, .close-btn:focus { color: var(--accent-color); text-decoration: none; cursor: pointer; }
+        
+        .details-comment {
+            font-size: 0.9em;
+            color: var(--text-muted-color);
+            margin-top: 5px;
+            font-weight: 300;
+        }
+
+        #modal-content-details {
+            line-height: 1.7;
+        }
+
+        /* Controls for background and music */
+        .media-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 999;
+        }
+        .control-group {
+            background: rgba(22, 33, 62, 0.8);
+            padding: 10px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+        }
+        .media-controls button {
+            background: var(--secondary-color);
+            border: 1px solid var(--border-color);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+        .media-controls button:hover {
+            background: var(--accent-color);
+        }
+        .music-info {
+            font-size: 12px;
+            text-align: center;
+            color: var(--text-muted-color);
+            width: 120px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>动漫评分殿堂</h1>
+
+        <div class="controls">
+            <input type="text" id="searchInput" class="search-box" onkeyup="filterTable()" placeholder="搜索动漫名称...">
+            <div id="tagFilterContainer" class="tag-filter">
+                <span>筛选标签: </span>
+            </div>
+        </div>
+
+        <table id="animeTable">
+            <thead>
+                <tr>
+                    <th style="width: 90px; text-align: center;">图片</th>
+                    <th data-sort="name">名称 <span class="sort-indicator">↕</span></th>
+                    <th data-sort="personalScore">个人评分 <span class="sort-indicator">↕</span></th>
+                    <th data-sort="production">制作(30%) <span class="sort-indicator">↕</span></th>
+                    <th data-sort="plot">剧情(40%) <span class="sort-indicator">↕</span></th>
+                    <th data-sort="character">角色(30%) <span class="sort-indicator">↕</span></th>
+                    <th data-sort="recommendationScore">推荐总分 <span class="sort-indicator">↕</span></th>
+                    <th data-sort="adjustmentScore">修正分数 <span class="sort-indicator">↕</span></th>
+                    <th data-sort="finalScore">最终得分 <span class="sort-indicator">↕</span></th>
+                    <th>标签</th>
+                    <th data-sort="date" class="sorted-desc">时间 <span class="sort-indicator">↓</span></th>
+                    <th data-sort="bangumiScore">Bangumi <span class="sort-indicator">↕</span></th>
+                </tr>
+            </thead>
+            <tbody id="animeTableBody">
+                <!-- Data will be inserted by JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 id="modalTitle"></h2>
+            <div id="modal-content-details"></div>
+        </div>
+    </div>
+
+    <!-- Background and Music Controls -->
+    <div class="media-controls">
+        <div class="control-group">
+            <button id="prevBgBtn" title="上一张背景">🖼️</button>
+            <button id="nextBgBtn" title="下一张背景">🖼️</button>
+        </div>
+        <div class="control-group">
+            <button id="playPauseBtn" title="播放/暂停">▶️</button>
+            <button id="nextTrackBtn" title="下一首">⏭️</button>
+            <div id="musicInfo" class="music-info">暂停中</div>
+        </div>
+    </div>
+    
+    <audio id="backgroundMusic" loop></audio>
+
+    <script>
+        // --- DATA ---
+        const animeData = [
+            {
+                name: "进击的巨人 最终季",
+                image: "https://lain.bgm.tv/pic/cover/l/21/27/295580_6f6i6.jpg",
+                personalScore: 9,
+                personalEvaluation: "史诗般的结局，带来了深刻的思考和无与伦比的震撼。",
+                recommendation: {
+                    production: 9.5, productionComment: "MAPPA制作精良，音乐与配音顶级。",
+                    plot: 9.0, plotComment: "剧情复杂深刻，探讨战争与人性。",
+                    character: 8.5, characterComment: "角色塑造有血有肉，转变令人印象深刻。",
+                },
+                adjustments: {
+                    controversy: "结局引发了巨大的争议。",
+                    depth: "内核深度极高，探讨了自由、宿命等哲学命题。",
+                    impact: "在全球范围内产生了巨大的社会影响。",
+                    artistry: "分镜和演出具有极高的艺术表达力。",
+                    score: 0.5
+                },
+                tags: ["热血", "奇幻", "战斗"], date: "2023-11-04", bangumiScore: 8.8
+            },
+            {
+                name: "赛博朋克：边缘行者",
+                image: "https://lain.bgm.tv/pic/cover/l/c0/02/339248_6x6sE.jpg",
+                personalScore: 10,
+                personalEvaluation: "视觉与情感的双重盛宴，看完后劲极大。",
+                recommendation: {
+                    production: 10, productionComment: "扳机社风格化制作登峰造极。",
+                    plot: 9.0, plotComment: "简单但极其动人的悲剧故事。",
+                    character: 9.5, characterComment: "角色弧光完整且令人心碎。",
+                },
+                adjustments: {
+                    controversy: "", depth: "对阶级固化和人性异化的探讨。",
+                    impact: "带动了游戏原作的再次流行。", artistry: "独特的视觉美学和音乐品味。", score: 0.2
+                },
+                tags: ["科幻", "战斗", "爱情"], date: "2022-09-13", bangumiScore: 8.6
+            },
+            {
+                name: "孤独摇滚！",
+                image: "https://lain.bgm.tv/pic/cover/l/4f/98/394509_3T399.jpg",
+                personalScore: 9,
+                personalEvaluation: "一部能让社恐产生强烈共鸣的搞笑日常番，音乐非常好听。",
+                recommendation: {
+                    production: 9.0, productionComment: "对心理活动的夸张表现手法非常有趣。",
+                    plot: 8.5, plotComment: "日常系的剧情，充满了笑点和温暖。",
+                    character: 9.5, characterComment: "主角波奇酱的塑造非常成功。",
+                },
+                adjustments: {
+                    controversy: "", depth: "关于梦想、友谊和自我成长的内核。",
+                    impact: "引发了“社恐”文化的热议。", artistry: "", score: 0.1
+                },
+                tags: ["日常", "音乐", "搞笑"], date: "2022-10-08", bangumiScore: 8.7
+            }
+        ];
+
+        // --- DOM ELEMENTS ---
+        const tableBody = document.getElementById('animeTableBody');
+        const searchInput = document.getElementById('searchInput');
+        const tagFilterContainer = document.getElementById('tagFilterContainer');
+        const modal = document.getElementById('detailsModal');
+        const modalTitle = document.getElementById('modalTitle');
+        const modalContent = document.getElementById('modal-content-details');
+        const closeBtn = document.getElementsByClassName("close-btn")[0];
+
+        // --- STATE ---
+        let currentSort = { column: 'date', direction: 'desc' };
+        let selectedTags = [];
+
+        // --- MODAL LOGIC ---
+        function showModal(title, contentHTML) {
+            modalTitle.textContent = title;
+            modalContent.innerHTML = contentHTML;
+            modal.style.display = "block";
+        }
+        closeBtn.onclick = () => modal.style.display = "none";
+        window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };
+
+        // --- CALCULATION LOGIC ---
+        const calculateRecommendationScore = (rec) => (rec.production * 0.3 + rec.plot * 0.4 + rec.character * 0.3).toFixed(2);
+        const calculateFinalScore = (recScore, adjScore) => (parseFloat(recScore) + adjScore).toFixed(2);
+
+        // --- RENDER LOGIC ---
+        function renderTable() {
+            tableBody.innerHTML = '';
+            
+            const filteredData = animeData.filter(anime => {
+                const searchMatch = anime.name.toLowerCase().includes(searchInput.value.toLowerCase());
+                const tagMatch = selectedTags.length === 0 || selectedTags.every(tag => anime.tags.includes(tag));
+                return searchMatch && tagMatch;
+            });
+            
+            filteredData.sort((a, b) => {
+                let aVal, bVal;
+                const getVal = (item, column) => {
+                    switch (column) {
+                        case 'production': return item.recommendation.production;
+                        case 'plot': return item.recommendation.plot;
+                        case 'character': return item.recommendation.character;
+                        case 'recommendationScore': return calculateRecommendationScore(item.recommendation);
+                        case 'adjustmentScore': return item.adjustments.score;
+                        case 'finalScore': return calculateFinalScore(calculateRecommendationScore(item.recommendation), item.adjustments.score);
+                        case 'date': return new Date(item.date);
+                        default: return item[column];
+                    }
+                };
+                aVal = getVal(a, currentSort.column);
+                bVal = getVal(b, currentSort.column);
+
+                if (currentSort.direction === 'asc') {
+                    return typeof aVal === 'string' ? aVal.localeCompare(bVal) : aVal - bVal;
+                } else {
+                    return typeof aVal === 'string' ? bVal.localeCompare(aVal) : bVal - aVal;
+                }
+            });
+
+            filteredData.forEach(anime => {
+                const recommendationScore = calculateRecommendationScore(anime.recommendation);
+                const finalScore = calculateFinalScore(recommendationScore, anime.adjustments.score);
+                const adj = anime.adjustments;
+
+                // Create content for adjustment details modal
+                let adjustmentDetailsHTML = `
+                    <p><strong>争议内容:</strong> ${adj.controversy || '无'}</p>
+                    <p><strong>内核深度:</strong> ${adj.depth || '无'}</p>
+                    <p><strong>社会影响:</strong> ${adj.impact || '无'}</p>
+                    <p><strong>艺术表达:</strong> ${adj.artistry || '无'}</p>
+                `;
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><img src="${anime.image}" alt="${anime.name}" class="anime-img"></td>
+                    <td>${anime.name}</td>
+                    <td><span class="score" onclick='showModal("${anime.name} - 个人评价", "<p>${anime.personalEvaluation}</p>")'>${anime.personalScore}</span></td>
+                    <td><strong>${anime.recommendation.production}</strong><div class="details-comment">${anime.recommendation.productionComment}</div></td>
+                    <td><strong>${anime.recommendation.plot}</strong><div class="details-comment">${anime.recommendation.plotComment}</div></td>
+                    <td><strong>${anime.recommendation.character}</strong><div class="details-comment">${anime.recommendation.characterComment}</div></td>
+                    <td><strong>${recommendationScore}</strong></td>
+                    <td><span class="score" onclick='showModal("${anime.name} - 分数修正详情", ${JSON.stringify(adjustmentDetailsHTML)})'>${adj.score > 0 ? '+' : ''}${adj.score}</span></td>
+                    <td><strong>${finalScore}</strong></td>
+                    <td class="tags">${anime.tags.map(tag => `<span>${tag}</span>`).join(' ')}</td>
+                    <td>${anime.date}</td>
+                    <td>${anime.bangumiScore}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+            updateSortIndicators();
+        }
+        
+        function renderTagFilters() {
+            const allTags = [...new Set(animeData.flatMap(a => a.tags))];
+            allTags.forEach(tag => {
+                const button = document.createElement('button');
+                button.textContent = tag;
+                button.onclick = () => toggleTag(tag, button);
+                tagFilterContainer.appendChild(button);
+            });
+        }
+
+        // --- EVENT HANDLERS & HELPERS ---
+        const filterTable = () => renderTable();
+        
+        function toggleTag(tag, button) {
+            const index = selectedTags.indexOf(tag);
+            if (index > -1) {
+                selectedTags.splice(index, 1);
+                button.classList.remove('active');
+            } else {
+                selectedTags.push(tag);
+                button.classList.add('active');
+            }
+            renderTable();
+        }
+
+        function sortTable(column) {
+            if (currentSort.column === column) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.column = column;
+                currentSort.direction = 'asc';
+            }
+            renderTable();
+        }
+        
+        function updateSortIndicators() {
+            document.querySelectorAll('#animeTable th[data-sort]').forEach(th => {
+                th.classList.remove('sorted-asc', 'sorted-desc');
+                const indicator = th.querySelector('.sort-indicator');
+                if (indicator) indicator.textContent = '↕';
+                
+                if (th.dataset.sort === currentSort.column) {
+                    th.classList.add(currentSort.direction === 'asc' ? 'sorted-asc' : 'sorted-desc');
+                    if(indicator) indicator.textContent = currentSort.direction === 'asc' ? '↑' : '↓';
+                }
+            });
+        }
+        
+        document.querySelectorAll('#animeTable th[data-sort]').forEach(header => {
+            header.addEventListener('click', () => sortTable(header.dataset.sort));
+        });
+
+        // --- BACKGROUND & MUSIC CONTROLS ---
+        const backgroundImages = [
+            'https://images.alphacoders.com/133/1332289.png',
+            'https://images.alphacoders.com/133/1337198.jpeg',
+            'https://images.alphacoders.com/134/1340158.jpeg',
+            'https://images.alphacoders.com/132/1322264.png',
+            'https://images.alphacoders.com/131/1319768.jpeg'
+        ];
+        
+        const musicTracks = [
+            { src: 'https://cdn.pixabay.com/audio/2022/11/17/audio_87463585f3.mp3', name: 'Lofi Chill' },
+            { src: 'https://cdn.pixabay.com/audio/2024/02/09/audio_650a2f143c.mp3', name: 'Ambient Cinematic' },
+            { src: 'https://cdn.pixabay.com/audio/2022/08/04/audio_2dde66b93b.mp3', name: 'Relaxing Beat' }
+        ];
+
+        let currentBgIndex = 0;
+        let bgInterval;
+        
+        let currentTrackIndex = 0;
+        const audio = document.getElementById('backgroundMusic');
+        const playPauseBtn = document.getElementById('playPauseBtn');
+        const nextTrackBtn = document.getElementById('nextTrackBtn');
+        const musicInfo = document.getElementById('musicInfo');
+
+        function changeBackground(direction) {
+            currentBgIndex = (currentBgIndex + direction + backgroundImages.length) % backgroundImages.length;
+            document.body.style.backgroundImage = `url('${backgroundImages[currentBgIndex]}')`;
+        }
+        
+        function startBgAutoplay() {
+            bgInterval = setInterval(() => changeBackground(1), 20000);
+        }
+
+        function playPauseMusic() {
+            if (audio.paused) {
+                if(!audio.src) changeTrack(0); // Load first track if not loaded
+                audio.play();
+                playPauseBtn.textContent = '⏸️';
+            } else {
+                audio.pause();
+                playPauseBtn.textContent = '▶️';
+            }
+            updateMusicInfo();
+        }
+        
+        function changeTrack(direction) {
+            currentTrackIndex = (currentTrackIndex + direction + musicTracks.length) % musicTracks.length;
+            audio.src = musicTracks[currentTrackIndex].src;
+            if (playPauseBtn.textContent === '⏸️') audio.play();
+            updateMusicInfo();
+        }
+        
+        function updateMusicInfo() {
+            musicInfo.textContent = audio.paused ? '暂停中' : musicTracks[currentTrackIndex].name;
+            musicInfo.title = musicTracks[currentTrackIndex].name;
+        }
+
+        document.getElementById('prevBgBtn').onclick = () => { clearInterval(bgInterval); changeBackground(-1); startBgAutoplay(); };
+        document.getElementById('nextBgBtn').onclick = () => { clearInterval(bgInterval); changeBackground(1); startBgAutoplay(); };
+        playPauseBtn.onclick = playPauseMusic;
+        nextTrackBtn.onclick = () => changeTrack(1);
+        audio.onended = () => changeTrack(1);
+        
+
+        // --- INITIAL LOAD ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderTable();
+            renderTagFilters();
+            changeBackground(0);
+            startBgAutoplay();
+            updateMusicInfo();
+        });
+
+    </script>
+</body>
+</html>
