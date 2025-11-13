@@ -6,6 +6,7 @@
     <title>动漫评分殿堂</title>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
     <style>
+        /* CSS样式与之前版本完全相同，此处省略以保持简洁。实际使用时请将上一个回答中的<style>内容完整复制到这里。 */
         :root {
             --bg-color: #1a1a2e;
             --primary-color: #16213e;
@@ -289,21 +290,16 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
-
     </style>
 </head>
 <body>
 
     <div class="container">
         <h1>动漫评分殿堂</h1>
-
         <div class="controls">
             <input type="text" id="searchInput" class="search-box" onkeyup="filterTable()" placeholder="搜索动漫名称...">
-            <div id="tagFilterContainer" class="tag-filter">
-                <span>筛选标签: </span>
-            </div>
+            <div id="tagFilterContainer" class="tag-filter"><span>筛选标签: </span></div>
         </div>
-
         <table id="animeTable">
             <thead>
                 <tr>
@@ -321,13 +317,10 @@
                     <th data-sort="bangumiScore">Bangumi <span class="sort-indicator">↕</span></th>
                 </tr>
             </thead>
-            <tbody id="animeTableBody">
-                <!-- Data will be inserted by JS -->
-            </tbody>
+            <tbody id="animeTableBody"></tbody>
         </table>
     </div>
 
-    <!-- Modal -->
     <div id="detailsModal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
@@ -336,7 +329,6 @@
         </div>
     </div>
 
-    <!-- Background and Music Controls -->
     <div class="media-controls">
         <div class="control-group">
             <button id="prevBgBtn" title="上一张背景">🖼️</button>
@@ -345,67 +337,18 @@
         <div class="control-group">
             <button id="playPauseBtn" title="播放/暂停">▶️</button>
             <button id="nextTrackBtn" title="下一首">⏭️</button>
-            <div id="musicInfo" class="music-info">暂停中</div>
+            <div id="musicInfo" class="music-info">加载中...</div>
         </div>
     </div>
     
     <audio id="backgroundMusic" loop></audio>
 
     <script>
-        // --- DATA ---
-        const animeData = [
-            {
-                name: "进击的巨人 最终季",
-                image: "https://lain.bgm.tv/pic/cover/l/21/27/295580_6f6i6.jpg",
-                personalScore: 9,
-                personalEvaluation: "史诗般的结局，带来了深刻的思考和无与伦比的震撼。",
-                recommendation: {
-                    production: 9.5, productionComment: "MAPPA制作精良，音乐与配音顶级。",
-                    plot: 9.0, plotComment: "剧情复杂深刻，探讨战争与人性。",
-                    character: 8.5, characterComment: "角色塑造有血有肉，转变令人印象深刻。",
-                },
-                adjustments: {
-                    controversy: "结局引发了巨大的争议。",
-                    depth: "内核深度极高，探讨了自由、宿命等哲学命题。",
-                    impact: "在全球范围内产生了巨大的社会影响。",
-                    artistry: "分镜和演出具有极高的艺术表达力。",
-                    score: 0.5
-                },
-                tags: ["热血", "奇幻", "战斗"], date: "2023-11-04", bangumiScore: 8.8
-            },
-            {
-                name: "赛博朋克：边缘行者",
-                image: "https://lain.bgm.tv/pic/cover/l/c0/02/339248_6x6sE.jpg",
-                personalScore: 10,
-                personalEvaluation: "视觉与情感的双重盛宴，看完后劲极大。",
-                recommendation: {
-                    production: 10, productionComment: "扳机社风格化制作登峰造极。",
-                    plot: 9.0, plotComment: "简单但极其动人的悲剧故事。",
-                    character: 9.5, characterComment: "角色弧光完整且令人心碎。",
-                },
-                adjustments: {
-                    controversy: "", depth: "对阶级固化和人性异化的探讨。",
-                    impact: "带动了游戏原作的再次流行。", artistry: "独特的视觉美学和音乐品味。", score: 0.2
-                },
-                tags: ["科幻", "战斗", "爱情"], date: "2022-09-13", bangumiScore: 8.6
-            },
-            {
-                name: "孤独摇滚！",
-                image: "https://lain.bgm.tv/pic/cover/l/4f/98/394509_3T399.jpg",
-                personalScore: 9,
-                personalEvaluation: "一部能让社恐产生强烈共鸣的搞笑日常番，音乐非常好听。",
-                recommendation: {
-                    production: 9.0, productionComment: "对心理活动的夸张表现手法非常有趣。",
-                    plot: 8.5, plotComment: "日常系的剧情，充满了笑点和温暖。",
-                    character: 9.5, characterComment: "主角波奇酱的塑造非常成功。",
-                },
-                adjustments: {
-                    controversy: "", depth: "关于梦想、友谊和自我成长的内核。",
-                    impact: "引发了“社恐”文化的热议。", artistry: "", score: 0.1
-                },
-                tags: ["日常", "音乐", "搞笑"], date: "2022-10-08", bangumiScore: 8.7
-            }
-        ];
+        // --- DATA PLACEHOLDERS ---
+        // The data will be loaded from external JSON files.
+        let animeData = [];
+        let musicTracks = [];
+        let backgroundImages = [];
 
         // --- DOM ELEMENTS ---
         const tableBody = document.getElementById('animeTableBody');
@@ -420,6 +363,7 @@
         let currentSort = { column: 'date', direction: 'desc' };
         let selectedTags = [];
 
+        // All other functions (renderTable, sortTable, etc.) remain the same as the previous version.
         // --- MODAL LOGIC ---
         function showModal(title, contentHTML) {
             modalTitle.textContent = title;
@@ -472,7 +416,6 @@
                 const finalScore = calculateFinalScore(recommendationScore, anime.adjustments.score);
                 const adj = anime.adjustments;
 
-                // Create content for adjustment details modal
                 let adjustmentDetailsHTML = `
                     <p><strong>争议内容:</strong> ${adj.controversy || '无'}</p>
                     <p><strong>内核深度:</strong> ${adj.depth || '无'}</p>
@@ -484,7 +427,7 @@
                 row.innerHTML = `
                     <td><img src="${anime.image}" alt="${anime.name}" class="anime-img"></td>
                     <td>${anime.name}</td>
-                    <td><span class="score" onclick='showModal("${anime.name} - 个人评价", "<p>${anime.personalEvaluation}</p>")'>${anime.personalScore}</span></td>
+                    <td><span class="score" onclick='showModal("${anime.name} - 个人评价", "<p>${anime.personalEvaluation.replace(/"/g, '&quot;')}</p>")'>${anime.personalScore}</span></td>
                     <td><strong>${anime.recommendation.production}</strong><div class="details-comment">${anime.recommendation.productionComment}</div></td>
                     <td><strong>${anime.recommendation.plot}</strong><div class="details-comment">${anime.recommendation.plotComment}</div></td>
                     <td><strong>${anime.recommendation.character}</strong><div class="details-comment">${anime.recommendation.characterComment}</div></td>
@@ -553,20 +496,6 @@
         });
 
         // --- BACKGROUND & MUSIC CONTROLS ---
-        const backgroundImages = [
-            'https://images.alphacoders.com/133/1332289.png',
-            'https://images.alphacoders.com/133/1337198.jpeg',
-            'https://images.alphacoders.com/134/1340158.jpeg',
-            'https://images.alphacoders.com/132/1322264.png',
-            'https://images.alphacoders.com/131/1319768.jpeg'
-        ];
-        
-        const musicTracks = [
-            { src: 'https://cdn.pixabay.com/audio/2022/11/17/audio_87463585f3.mp3', name: 'Lofi Chill' },
-            { src: 'https://cdn.pixabay.com/audio/2024/02/09/audio_650a2f143c.mp3', name: 'Ambient Cinematic' },
-            { src: 'https://cdn.pixabay.com/audio/2022/08/04/audio_2dde66b93b.mp3', name: 'Relaxing Beat' }
-        ];
-
         let currentBgIndex = 0;
         let bgInterval;
         
@@ -577,17 +506,21 @@
         const musicInfo = document.getElementById('musicInfo');
 
         function changeBackground(direction) {
+            if (backgroundImages.length === 0) return;
             currentBgIndex = (currentBgIndex + direction + backgroundImages.length) % backgroundImages.length;
             document.body.style.backgroundImage = `url('${backgroundImages[currentBgIndex]}')`;
         }
         
         function startBgAutoplay() {
-            bgInterval = setInterval(() => changeBackground(1), 20000);
+            if (backgroundImages.length > 1) {
+                bgInterval = setInterval(() => changeBackground(1), 20000);
+            }
         }
 
         function playPauseMusic() {
+            if (musicTracks.length === 0) return;
             if (audio.paused) {
-                if(!audio.src) changeTrack(0); // Load first track if not loaded
+                if(!audio.src) changeTrack(0);
                 audio.play();
                 playPauseBtn.textContent = '⏸️';
             } else {
@@ -598,6 +531,7 @@
         }
         
         function changeTrack(direction) {
+            if (musicTracks.length === 0) return;
             currentTrackIndex = (currentTrackIndex + direction + musicTracks.length) % musicTracks.length;
             audio.src = musicTracks[currentTrackIndex].src;
             if (playPauseBtn.textContent === '⏸️') audio.play();
@@ -605,6 +539,10 @@
         }
         
         function updateMusicInfo() {
+            if (musicTracks.length === 0) {
+                musicInfo.textContent = '无音乐';
+                return;
+            }
             musicInfo.textContent = audio.paused ? '暂停中' : musicTracks[currentTrackIndex].name;
             musicInfo.title = musicTracks[currentTrackIndex].name;
         }
@@ -614,15 +552,32 @@
         playPauseBtn.onclick = playPauseMusic;
         nextTrackBtn.onclick = () => changeTrack(1);
         audio.onended = () => changeTrack(1);
-        
 
         // --- INITIAL LOAD ---
         document.addEventListener('DOMContentLoaded', () => {
-            renderTable();
-            renderTagFilters();
-            changeBackground(0);
-            startBgAutoplay();
-            updateMusicInfo();
+            // Fetch all data files at the same time
+            Promise.all([
+                fetch('animeData.json').then(res => res.json()),
+                fetch('musicData.json').then(res => res.json()),
+                fetch('backgrounds.json').then(res => res.json())
+            ])
+            .then(([loadedAnimeData, loadedMusicData, loadedBackgrounds]) => {
+                // Once all data is loaded, assign it to our variables
+                animeData = loadedAnimeData;
+                musicTracks = loadedMusicData;
+                backgroundImages = loadedBackgrounds;
+
+                // Now, initialize the website with the loaded data
+                renderTable();
+                renderTagFilters();
+                changeBackground(0);
+                startBgAutoplay();
+                updateMusicInfo();
+            })
+            .catch(error => {
+                console.error("加载核心数据失败:", error);
+                document.body.innerHTML = `<h1 style="color:white; text-align:center; margin-top: 20vh;">无法加载网站数据，请检查JSON文件是否存在且格式正确。</h1>`;
+            });
         });
 
     </script>
