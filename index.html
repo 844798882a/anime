@@ -95,11 +95,9 @@
             user-select: none; white-space: nowrap; font-weight: 400;
         }
         
-        tr { transition: all 0.2s ease-out; }
+        tr { transition: background-color 0.2s ease-out; }
         tbody tr:hover {
             background-color: var(--hover-bg-color);
-            transform: scale(1.01); box-shadow: 0 5px 15px rgba(0,0,0,0.4);
-            z-index: 10; position: relative;
         }
         
         th .sort-indicator { float: right; margin-left: 5px; color: var(--text-muted-color); }
@@ -172,7 +170,7 @@
             width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
 
-        /* --- NEW: MOBILE ADAPTATION STYLES --- */
+        /* --- MOBILE ADAPTATION STYLES --- */
         @media screen and (max-width: 768px) {
             body { padding: 20px 10px; }
             .container { padding: 15px; }
@@ -186,28 +184,22 @@
             table, tbody, tr, td { display: block; width: 100%; box-sizing: border-box; }
             
             tbody tr {
-                margin-bottom: 20px;
-                padding: 15px;
-                border: 1px solid var(--border-color);
-                border-radius: 8px;
+                margin-bottom: 20px; padding: 15px;
+                border: 1px solid var(--border-color); border-radius: 8px;
+                transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
             }
 
-            tbody tr:hover { transform: scale(1.02); }
+            tbody tr:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
 
             td {
-                padding: 8px 0;
-                border-bottom: 1px dashed var(--border-color);
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
+                padding: 8px 0; border-bottom: 1px dashed var(--border-color);
+                display: flex; justify-content: space-between; align-items: center;
             }
             td:last-child { border-bottom: none; }
 
             td::before {
-                content: attr(data-label);
-                font-weight: bold;
-                margin-right: 10px;
-                color: var(--text-muted-color);
+                content: attr(data-label); font-weight: bold;
+                margin-right: 10px; color: var(--text-muted-color);
             }
             
             td[data-label="图片"] { display: block; text-align: center; padding-bottom: 15px; }
@@ -215,16 +207,20 @@
             .anime-img { width: 100px; height: 150px; }
 
             td[data-label="名称"] {
-                flex-direction: column;
-                font-size: 1.2em;
-                font-weight: bold;
-                color: #fff;
-                padding-bottom: 10px;
-                align-items: flex-start;
+                flex-direction: column; font-size: 1.2em; font-weight: bold;
+                color: #fff; padding-bottom: 10px; align-items: flex-start;
             }
             td[data-label="名称"]::before { display: none; }
 
-            .details-comment { max-width: 60%; }
+            /* NEW: Styles for comment alignment without extra div */
+            td[data-label^="制作"], td[data-label^="剧情"], td[data-label^="角色"] {
+                align-items: flex-start;
+            }
+            td[data-label^="制作"] > div, td[data-label^="剧情"] > div, td[data-label^="角色"] > div {
+                 text-align: right;
+            }
+
+            .details-comment { max-width: 100%; }
             .tags { flex-wrap: wrap; justify-content: flex-end; }
             .tags span { margin-top: 5px; }
 
@@ -261,43 +257,28 @@
         </table>
     </div>
 
-    <div id="detailsModal" class="modal">
-        <div class="modal-content">
-            <span class="close-btn">&times;</span>
-            <h2 id="modalTitle"></h2>
-            <div id="modal-content-details"></div>
-        </div>
-    </div>
-
-    <div class="media-controls">
-        <div class="control-group">
-            <button id="prevBgBtn" title="上一张背景">🖼️</button>
-            <button id="nextBgBtn" title="下一张背景">🖼️</button>
-        </div>
-        <div class="control-group">
-            <button id="playPauseBtn" title="播放/暂停">▶️</button>
-            <button id="nextTrackBtn" title="下一首">⏭️</button>
-            <div id="musicInfo" class="music-info">暂停中</div>
-        </div>
-    </div>
-    
+    <div id="detailsModal" class="modal"><div class="modal-content"><span class="close-btn">&times;</span><h2 id="modalTitle"></h2><div id="modal-content-details"></div></div></div>
+    <div class="media-controls"><div class="control-group"><button id="prevBgBtn" title="上一张背景">🖼️</button><button id="nextBgBtn" title="下一张背景">🖼️</button></div><div class="control-group"><button id="playPauseBtn" title="播放/暂停">▶️</button><button id="nextTrackBtn" title="下一首">⏭️</button><div id="musicInfo" class="music-info">暂停中</div></div></div>
     <audio id="backgroundMusic" loop></audio>
 
     <script>
         // Data will be loaded from JSON files
         let animeData = [], musicTracks = [], backgroundImages = [];
         
+        // DOM Elements
         const tableBody = document.getElementById('animeTableBody');
         const searchInput = document.getElementById('searchInput');
         const tagFilterContainer = document.getElementById('tagFilterContainer');
         const modal = document.getElementById('detailsModal');
         const modalTitle = document.getElementById('modalTitle');
         const modalContent = document.getElementById('modal-content-details');
-        const closeBtn = document.getElementsByClassName("close-btn")[0];
+        const closeBtn = document.querySelector("#detailsModal .close-btn");
         
+        // State
         let currentSort = { column: 'date', direction: 'desc' };
         let selectedTags = [];
 
+        // Modal Logic
         function showModal(title, contentHTML) {
             modalTitle.textContent = title;
             modalContent.innerHTML = contentHTML;
@@ -306,9 +287,11 @@
         closeBtn.onclick = () => modal.style.display = "none";
         window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };
 
+        // Calculation Logic
         const calculateRecommendationScore = (rec) => (rec.production * 0.3 + rec.plot * 0.4 + rec.character * 0.3).toFixed(2);
         const calculateFinalScore = (recScore, adjScore) => (parseFloat(recScore) + adjScore).toFixed(2);
 
+        // Render Logic
         function renderTable() {
             tableBody.innerHTML = '';
             const filteredData = animeData.filter(anime => 
@@ -341,12 +324,12 @@
                 const adj = anime.adjustments;
                 const adjHTML = `<p><strong>争议内容:</strong> ${adj.controversy||'无'}</p><p><strong>内核深度:</strong> ${adj.depth||'无'}</p><p><strong>社会影响:</strong> ${adj.impact||'无'}</p><p><strong>艺术表达:</strong> ${adj.artistry||'无'}</p>`;
 
-                // UPDATED: Added data-label attributes for mobile view
                 const row = document.createElement('tr');
+                // FIXED: Removed the extra <div> wrapper around some content for better compatibility
                 row.innerHTML = `
                     <td data-label="图片"><img src="${anime.image}" alt="${anime.name}" class="anime-img"></td>
                     <td data-label="名称">${anime.name}</td>
-                    <td data-label="个人评分"><span class="score" onclick='showModal("${anime.name} - 个人评价", "<p>${anime.personalEvaluation}</p>")'>${anime.personalScore}</span></td>
+                    <td data-label="个人评分"><span class="score" onclick='showModal("${anime.name} - 个人评价", "<p>${anime.personalEvaluation.replace(/"/g, '&quot;')}</p>")'>${anime.personalScore}</span></td>
                     <td data-label="制作(30%)"><div><strong>${anime.recommendation.production}</strong><div class="details-comment">${anime.recommendation.productionComment}</div></div></td>
                     <td data-label="剧情(40%)"><div><strong>${anime.recommendation.plot}</strong><div class="details-comment">${anime.recommendation.plotComment}</div></div></td>
                     <td data-label="角色(30%)"><div><strong>${anime.recommendation.character}</strong><div class="details-comment">${anime.recommendation.characterComment}</div></div></td>
@@ -363,6 +346,7 @@
         }
         
         function renderTagFilters() {
+            tagFilterContainer.innerHTML = '<span>筛选标签: </span>';
             const allTags = [...new Set(animeData.flatMap(a => a.tags))];
             allTags.forEach(tag => {
                 const button = document.createElement('button');
@@ -397,8 +381,8 @@
                 }
             });
         }
-        document.querySelectorAll('#animeTable th[data-sort]').forEach(header => header.addEventListener('click', () => sortTable(header.dataset.sort)));
-
+        
+        // Media Controls Logic (Unchanged)
         let currentBgIndex = 0, bgInterval, currentTrackIndex = 0;
         const audio = document.getElementById('backgroundMusic');
         const playPauseBtn = document.getElementById('playPauseBtn');
@@ -439,8 +423,13 @@
         nextTrackBtn.onclick = () => changeTrack(1);
         audio.onended = () => changeTrack(1);
 
+        // --- INITIAL LOAD ---
         document.addEventListener('DOMContentLoaded', () => {
-            // UPDATED: Fetching from new filenames
+            // FIXED: Event listeners are now safely attached after the DOM is fully loaded.
+            document.querySelectorAll('#animeTable th[data-sort]').forEach(header => {
+                header.addEventListener('click', () => sortTable(header.dataset.sort));
+            });
+            
             const fetchData = fetch('data/animeData.json').then(res => res.json());
             const fetchMusic = fetch('data/musicData.json').then(res => res.json());
             const fetchBackgrounds = fetch('data/backgrounds.json').then(res => res.json());
