@@ -1,0 +1,50 @@
+[
+  {
+    "name": "进击的巨人 最终季",
+    "image": "images/shingeki.jpg",
+    "personalScore": 9,
+    "personalEvaluation": "史诗般的结局，带来了深刻的思考和无与伦比的震撼。",
+    "recommendation": {
+      "production": 9.5, "productionComment": "MAPPA制作精良，音乐与配音顶级。",
+      "plot": 9.0, "plotComment": "剧情复杂深刻，探讨战争与人性。",
+      "character": 8.5, "characterComment": "角色塑造有血有肉，转变令人印象深刻。"
+    },
+    "adjustments": {
+      "controversy": "结局引发了巨大的争议。", "depth": "内核深度极高，探讨了自由、宿命等哲学命题。",
+      "impact": "在全球范围内产生了巨大的社会影响。", "artistry": "分镜和演出具有极高的艺术表达力。", "score": 0.5
+    },
+    "tags": ["热血", "奇幻", "战斗"], "date": "2023-11-04", "bangumiScore": 8.8
+  },
+  {
+    "name": "赛博朋克：边缘行者",
+    "image": "images/cyberpunk.jpg",
+    "personalScore": 10,
+    "personalEvaluation": "视觉与情感的双重盛宴，看完后劲极大。",
+    "recommendation": {
+      "production": 10, "productionComment": "扳机社风格化制作登峰造极。",
+      "plot": 9.0, "plotComment": "简单但极其动人的悲剧故事。",
+      "character": 9.5, "characterComment": "角色弧光完整且令人心碎。"
+    },
+    "adjustments": {
+      "controversy": "", "depth": "对阶级固化和人性异化的探讨。",
+      "impact": "带动了游戏原作的再次流行。", "artistry": "独特的视觉美学和音乐品味。", "score": 0.2
+    },
+    "tags": ["科幻", "战斗", "爱情"], "date": "2022-09-13", "bangumiScore": 8.6
+  },
+  {
+    "name": "孤独摇滚！",
+    "image": "images/bocchi.jpg",
+    "personalScore": 9,
+    "personalEvaluation": "一部能让社恐产生强烈共鸣的搞笑日常番，音乐非常好听。",
+    "recommendation": {
+      "production": 9.0, "productionComment": "对心理活动的夸张表现手法非常有趣。",
+      "plot": 8.5, "plotComment": "日常系的剧情，充满了笑点和温暖。",
+      "character": 9.5, "characterComment": "主角波奇酱的塑造非常成功。"
+    },
+    "adjustments": {
+      "controversy": "", "depth": "关于梦想、友谊和自我成长的内核。",
+      "impact": "引发了“社恐”文化的热议。", "artistry": "", "score": 0.1
+    },
+    "tags": ["日常", "音乐", "搞笑"], "date": "2022-10-08", "bangumiScore": 8.7
+  }
+]
