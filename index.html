@@ -4,238 +4,375 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>动漫评分殿堂</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #1a1a2e;
-            --primary-color: #16213e;
-            --secondary-color: #0f3460;
-            --accent-color: #e94560;
-            --text-color: #dcdcdc;
-            --text-muted-color: #a0a0a0;
-            --border-color: #2a2a4a;
-            --hover-bg-color: #1f2b4e;
+            --bg-dark: #0f172a;
+            --glass-bg: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --primary: #3b82f6;
+            --accent: #f43f5e;
+            --text-main: #f1f5f9;
+            --text-sub: #94a3b8;
+            --hover-row: rgba(59, 130, 246, 0.15);
         }
 
         body {
             font-family: 'Noto Sans SC', sans-serif;
             margin: 0;
-            padding: 40px 20px;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            padding: 0;
+            background-color: var(--bg-dark);
+            color: var(--text-main);
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
-            transition: background-image 1.5s ease-in-out;
+            transition: background-image 1.2s ease-in-out;
+            min-height: 100vh;
+        }
+
+        /* 遮罩层，让背景图暗一点，提升文字可读性 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.6);
+            z-index: -1;
         }
 
         .container {
             max-width: 1600px;
-            margin: auto;
-            background: rgba(22, 33, 62, 0.9);
+            margin: 40px auto;
             padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            border: 1px solid var(--border-color);
-            animation: fadeInSlideUp 0.8s ease-out forwards;
+            /* 毛玻璃效果 */
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.8s ease-out;
         }
 
-        @keyframes fadeInSlideUp {
-            from { opacity: 0; transform: translateY(20px); }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
         h1 {
-            text-align: center; color: #fff; font-weight: 700;
-            letter-spacing: 2px; margin-bottom: 30px;
+            text-align: center;
+            font-weight: 700;
+            font-size: 2.5rem;
+            margin-bottom: 40px;
+            background: linear-gradient(to right, #60a5fa, #e879f9);
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: 2px;
         }
 
+        /* --- 控制栏样式 --- */
         .controls {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 25px; flex-wrap: wrap; gap: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            gap: 20px;
+            flex-wrap: wrap;
         }
 
         .search-box {
-            padding: 10px 15px; border: 1px solid var(--border-color);
-            border-radius: 6px; font-size: 16px;
-            background-color: var(--primary-color); color: var(--text-color);
-            width: 250px; transition: all 0.3s ease;
+            padding: 12px 20px;
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            font-size: 16px;
+            background: rgba(0, 0, 0, 0.3);
+            color: #fff;
+            width: 300px;
+            transition: all 0.3s;
         }
 
         .search-box:focus {
-            outline: none; border-color: var(--accent-color);
-            box-shadow: 0 0 10px rgba(233, 69, 96, 0.5);
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
         }
 
-        /* --- UPDATED: Tag Filter Styles --- */
         .tag-filter {
-            flex: 1; /* Allow the container to grow */
+            flex: 1;
             display: flex;
-            flex-wrap: wrap; /* This is the key property to allow wrapping */
+            flex-wrap: wrap; /* 允许标签换行 */
+            gap: 10px;
             align-items: center;
-            gap: 8px; /* Controls spacing between and below buttons */
-            min-width: 200px; /* Ensure it has some minimum width */
+            justify-content: flex-end;
         }
 
-        .tag-filter button {
-            padding: 8px 15px; border: 1px solid var(--border-color);
-            border-radius: 15px; font-size: 14px; cursor: pointer;
-            background-color: var(--secondary-color); color: var(--text-color);
-            /* margin is no longer needed, gap property on parent handles it */
-            transition: all 0.3s ease;
+        .tag-btn {
+            padding: 8px 16px;
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            font-size: 14px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-sub);
+            transition: all 0.3s;
         }
 
-        .tag-filter button:hover { background-color: var(--hover-bg-color); }
-        .tag-filter button.active {
-            background-color: var(--accent-color); color: #fff;
-            border-color: var(--accent-color);
+        .tag-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .tag-btn.active {
+            background: var(--primary);
+            color: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.4);
+        }
+
+        /* --- 表格样式 --- */
+        .table-wrapper {
+            overflow-x: auto;
+            border-radius: 12px;
         }
 
         table {
-            width: 100%; border-collapse: collapse;
-            margin-top: 20px; font-size: 0.95em;
-        }
-
-        th, td {
-            padding: 12px 10px; border-bottom: 1px solid var(--border-color);
-            text-align: left; vertical-align: middle;
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 0.95rem;
         }
 
         th {
-            background-color: rgba(15, 52, 96, 0.5); cursor: pointer;
-            user-select: none; white-space: nowrap; font-weight: 400;
-        }
-        
-        tr { transition: background-color 0.2s ease-out; }
-        tbody tr:hover {
-            background-color: var(--hover-bg-color);
-        }
-        
-        th .sort-indicator { float: right; margin-left: 5px; color: var(--text-muted-color); }
-        th.sorted-asc .sort-indicator, th.sorted-desc .sort-indicator { color: #fff; }
-
-        .anime-img {
-            width: 70px; height: 105px; object-fit: cover;
-            border-radius: 6px; display: block; margin: auto;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
-
-        .score {
-            font-weight: 700; font-size: 1.1em; cursor: pointer;
-            color: #61dafb; text-decoration: none; display: inline-block;
+            padding: 16px;
+            background: rgba(15, 23, 42, 0.95); /* 深色不透明背景，防止滚动重叠 */
+            color: var(--text-sub);
+            font-weight: 600;
+            text-align: left;
+            white-space: nowrap;
+            cursor: pointer;
+            position: sticky; /* 表头冻结 */
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid var(--glass-border);
             transition: color 0.3s;
         }
-        .score:hover { color: var(--accent-color); text-shadow: 0 0 8px var(--accent-color); }
-        
-        td strong { font-size: 1.1em; font-weight: 700; }
 
-        .tags span {
-            background-color: var(--secondary-color); padding: 4px 10px;
-            border-radius: 12px; margin: 2px; font-size: 0.85em; display: inline-block;
+        th:hover {
+            color: #fff;
+            background: rgba(30, 41, 59, 1);
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid var(--glass-border);
+            vertical-align: middle;
+            color: var(--text-main);
+        }
+
+        tbody tr {
+            transition: all 0.2s;
+            background: rgba(255, 255, 255, 0.01);
+        }
+
+        tbody tr:hover {
+            background: var(--hover-row);
+            transform: scale(1.005);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+
+        .anime-img {
+            width: 80px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+
+        /* 分数链接样式 */
+        .score-link {
+            font-weight: 700;
+            font-size: 1.2em;
+            color: var(--primary);
+            text-decoration: none;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            display: inline-block;
+        }
+
+        .score-link:hover {
+            background: rgba(59, 130, 246, 0.2);
+            color: #60a5fa;
         }
         
+        /* 修正分数为正数时显示绿色，负数红色(逻辑在JS中处理颜色，这里基础样式) */
+        .score-adj { color: var(--accent); }
+
+        .tag-badge {
+            display: inline-block;
+            padding: 4px 10px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            font-size: 0.85em;
+            margin: 2px;
+            white-space: nowrap;
+        }
+
+        .comment-text {
+            font-size: 0.85em;
+            color: var(--text-sub);
+            margin-top: 6px;
+            line-height: 1.4;
+        }
+        
+        strong { color: #fff; }
+
+        /* --- 模态框样式 --- */
         .modal {
-            display: none; position: fixed; z-index: 1000;
-            left: 0; top: 0; width: 100%; height: 100%;
-            overflow: auto; background-color: rgba(0,0,0,0.7);
-            backdrop-filter: blur(5px); animation: fadeIn 0.4s;
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0; top: 0;
+            width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            animation: fadeIn 0.3s;
         }
 
         .modal-content {
-            background-color: var(--primary-color); color: var(--text-color);
-            margin: 12% auto; padding: 25px; border: 1px solid var(--border-color);
-            width: 90%; max-width: 550px; border-radius: 10px; position: relative;
-            animation: slideIn 0.4s; box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: #1e293b;
+            margin: 10% auto;
+            padding: 30px;
+            width: 90%;
+            max-width: 600px;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            position: relative;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            animation: zoomIn 0.3s;
+            color: #e2e8f0;
         }
-
-        @keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
-        @keyframes slideIn { from {transform: translateY(-50px);} to {transform: translateY(0);} }
 
         .close-btn {
-            color: #aaa; position: absolute; top: 15px; right: 20px;
-            font-size: 32px; font-weight: bold; transition: color 0.3s;
+            position: absolute;
+            top: 20px; right: 25px;
+            font-size: 30px;
+            color: var(--text-sub);
+            cursor: pointer;
+            transition: color 0.3s;
         }
-        .close-btn:hover, .close-btn:focus { color: var(--accent-color); text-decoration: none; cursor: pointer; }
-        
-        .details-comment { font-size: 0.9em; color: var(--text-muted-color); margin-top: 5px; font-weight: 300; }
-        #modal-content-details { line-height: 1.7; }
 
+        .close-btn:hover { color: #fff; }
+
+        @keyframes fadeIn { from {opacity:0} to {opacity:1} }
+        @keyframes zoomIn { from {transform:scale(0.9)} to {transform:scale(1)} }
+
+        /* --- 媒体控制器 --- */
         .media-controls {
-            position: fixed; bottom: 20px; right: 20px; display: flex;
-            flex-direction: column; gap: 15px; z-index: 999;
+            position: fixed;
+            bottom: 30px; right: 30px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 1000;
         }
+
         .control-group {
-            background: rgba(22, 33, 62, 0.8); padding: 10px;
-            border-radius: 8px; display: flex; align-items: center;
-            gap: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            background: rgba(15, 23, 42, 0.85);
+            backdrop-filter: blur(10px);
+            padding: 12px;
+            border-radius: 50px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.3);
         }
-        .media-controls button {
-            background: var(--secondary-color); border: 1px solid var(--border-color);
-            color: white; width: 40px; height: 40px; border-radius: 50%;
-            cursor: pointer; font-size: 18px; display: flex;
-            align-items: center; justify-content: center; transition: all 0.3s ease;
+
+        .icon-btn {
+            background: rgba(255,255,255,0.1);
+            border: none;
+            color: #fff;
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
         }
-        .media-controls button:hover { background: var(--accent-color); }
+
+        .icon-btn:hover {
+            background: var(--primary);
+            transform: rotate(15deg);
+        }
+
         .music-info {
-            font-size: 12px; text-align: center; color: var(--text-muted-color);
-            width: 120px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            font-size: 12px;
+            color: var(--text-sub);
+            width: 100px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
-        /* --- MOBILE ADAPTATION STYLES --- */
+        /* --- 手机端适配 --- */
         @media screen and (max-width: 768px) {
-            body { padding: 20px 10px; }
-            .container { padding: 15px; }
-            h1 { font-size: 1.5em; }
+            .container { padding: 15px; margin: 10px; width: auto; }
+            h1 { font-size: 1.8rem; margin-bottom: 20px; }
+            .search-box { width: 100%; }
+            .tag-filter { justify-content: center; }
             
-            .controls { flex-direction: column; align-items: stretch; }
-            .search-box { width: auto; }
-            .tag-filter { justify-content: center; } /* Center the tags on mobile */
-
-            table thead { display: none; }
-            table, tbody, tr, td { display: block; width: 100%; box-sizing: border-box; }
+            /* 隐藏原来的表头 */
+            thead { display: none; }
+            
+            /* 表格变卡片 */
+            table, tbody, tr, td { display: block; width: 100%; }
             
             tbody tr {
-                margin-bottom: 20px; padding: 15px;
-                border: 1px solid var(--border-color); border-radius: 8px;
-                transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+                margin-bottom: 20px;
+                background: rgba(255,255,255,0.03);
+                border: 1px solid var(--glass-border);
+                border-radius: 12px;
+                padding: 15px;
             }
-
-            tbody tr:hover { transform: scale(1.02); box-shadow: 0 5px 15px rgba(0,0,0,0.4); }
 
             td {
-                padding: 8px 0; border-bottom: 1px dashed var(--border-color);
-                display: flex; justify-content: space-between; align-items: center;
-            }
-            td:last-child { border-bottom: none; }
-
-            td::before {
-                content: attr(data-label); font-weight: bold;
-                margin-right: 10px; color: var(--text-muted-color);
-                white-space: nowrap;
+                padding: 10px 0;
+                border-bottom: 1px dashed rgba(255,255,255,0.1);
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                text-align: right;
             }
             
-            td[data-label="图片"] { display: block; text-align: center; padding-bottom: 15px; }
-            td[data-label="图片"]::before { display: none; }
-            .anime-img { width: 100px; height: 150px; }
+            td:last-child { border-bottom: none; }
 
+            /* 使用 data-label 显示标签 */
+            td::before {
+                content: attr(data-label);
+                color: var(--text-sub);
+                font-weight: bold;
+                text-align: left;
+                margin-right: 15px;
+            }
+
+            /* 特殊处理图片和名称 */
+            td[data-label="图片"] { display: block; text-align: center; border-bottom: none; padding-bottom: 5px; }
+            td[data-label="图片"]::before { display: none; }
+            
             td[data-label="名称"] {
-                flex-direction: column; font-size: 1.2em; font-weight: bold;
-                color: #fff; padding-bottom: 10px; align-items: flex-start;
+                display: block; text-align: center;
+                font-size: 1.3rem; color: #fff;
+                padding-top: 0; border-bottom: 2px solid var(--glass-border);
             }
             td[data-label="名称"]::before { display: none; }
 
-            td[data-label^="制作"], td[data-label^="剧情"], td[data-label^="角色"] {
-                align-items: flex-start;
-            }
-            td[data-label^="制作"] > div, td[data-label^="剧情"] > div, td[data-label^="角色"] > div {
-                 text-align: right;
-            }
-
-            .details-comment { max-width: 100%; }
-            .tags { flex-wrap: wrap; justify-content: flex-end; }
-            .tags span { margin-top: 5px; }
-
-            .media-controls { bottom: 10px; right: 10px; }
+            /* 对齐长内容 */
+            .td-content { max-width: 60%; text-align: right; }
         }
     </style>
 </head>
@@ -243,226 +380,373 @@
 
     <div class="container">
         <h1>动漫评分殿堂</h1>
+
         <div class="controls">
-            <input type="text" id="searchInput" class="search-box" onkeyup="filterTable()" placeholder="搜索动漫名称...">
-            <div id="tagFilterContainer" class="tag-filter"><span>筛选标签: </span></div>
+            <input type="text" id="searchInput" class="search-box" placeholder="搜索动漫名称...">
+            <div id="tagFilterContainer" class="tag-filter">
+                <!-- 标签将由JS生成 -->
+            </div>
         </div>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 90px; text-align: center;">图片</th>
-                    <th data-sort="name">名称<span class="sort-indicator">↕</span></th>
-                    <th data-sort="personalScore">个人评分<span class="sort-indicator">↕</span></th>
-                    <th data-sort="production">制作(30%)<span class="sort-indicator">↕</span></th>
-                    <th data-sort="plot">剧情(40%)<span class="sort-indicator">↕</span></th>
-                    <th data-sort="character">角色(30%)<span class="sort-indicator">↕</span></th>
-                    <th data-sort="recommendationScore">推荐总分<span class="sort-indicator">↕</span></th>
-                    <th data-sort="adjustmentScore">修正分数<span class="sort-indicator">↕</span></th>
-                    <th data-sort="finalScore">最终得分<span class="sort-indicator">↕</span></th>
-                    <th>标签</th>
-                    <th data-sort="date" class="sorted-desc">时间<span class="sort-indicator">↓</span></th>
-                    <th data-sort="bangumiScore">Bangumi<span class="sort-indicator">↕</span></th>
-                </tr>
-            </thead>
-            <tbody id="animeTableBody"></tbody>
-        </table>
+
+        <div class="table-wrapper">
+            <table id="animeTable">
+                <thead>
+                    <tr>
+                        <th style="width: 90px; text-align: center;">图片</th>
+                        <th data-sort="name">名称 <span class="sort-indicator">↕</span></th>
+                        <th data-sort="personalScore">个人评分 <span class="sort-indicator">↕</span></th>
+                        <th data-sort="production">制作(30%) <span class="sort-indicator">↕</span></th>
+                        <th data-sort="plot">剧情(40%) <span class="sort-indicator">↕</span></th>
+                        <th data-sort="character">角色(30%) <span class="sort-indicator">↕</span></th>
+                        <th data-sort="recommendationScore">推荐总分 <span class="sort-indicator">↕</span></th>
+                        <th data-sort="adjustmentScore">修正分数 <span class="sort-indicator">↕</span></th>
+                        <th data-sort="finalScore">最终得分 <span class="sort-indicator">↕</span></th>
+                        <th>标签</th>
+                        <th data-sort="date" class="sorted-desc">时间 <span class="sort-indicator">↓</span></th>
+                        <th data-sort="bangumiScore">Bangumi <span class="sort-indicator">↕</span></th>
+                    </tr>
+                </thead>
+                <tbody id="animeTableBody">
+                    <!-- 数据行 -->
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <div id="detailsModal" class="modal"><div class="modal-content"><span class="close-btn">&times;</span><h2 id="modalTitle"></h2><div id="modal-content-details"></div></div></div>
-    <div class="media-controls"><div class="control-group"><button id="prevBgBtn" title="上一张背景">🖼️</button><button id="nextBgBtn" title="下一张背景">🖼️</button></div><div class="control-group"><button id="playPauseBtn" title="播放/暂停">▶️</button><button id="nextTrackBtn" title="下一首">⏭️</button><div id="musicInfo" class="music-info">暂停中</div></div></div>
+    <!-- 详情模态框 -->
+    <div id="detailsModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 id="modalTitle" style="margin-top:0; font-size: 1.5rem;"></h2>
+            <div id="modalContent" style="line-height: 1.8; font-size: 1.05rem;"></div>
+        </div>
+    </div>
+
+    <!-- 媒体控制器 -->
+    <div class="media-controls">
+        <div class="control-group">
+            <button class="icon-btn" id="prevBgBtn" title="上一张背景">🖼️</button>
+            <button class="icon-btn" id="nextBgBtn" title="下一张背景">🖼️</button>
+        </div>
+        <div class="control-group">
+            <button class="icon-btn" id="playPauseBtn" title="播放/暂停">▶️</button>
+            <button class="icon-btn" id="nextTrackBtn" title="下一首">⏭️</button>
+            <div id="musicInfo" class="music-info">点击播放</div>
+        </div>
+    </div>
+    
     <audio id="backgroundMusic" loop></audio>
 
     <script>
-        // Data will be loaded from JSON files
+        // --- 全局变量 ---
         let animeData = [], musicTracks = [], backgroundImages = [];
+        let currentFilteredData = []; // 存储当前显示的数据，用于点击事件
+        let currentSort = { column: 'date', direction: 'desc' };
+        let selectedTags = [];
         
-        // DOM Elements
+        // 媒体状态
+        let currentBgIndex = 0;
+        let bgInterval;
+        let currentTrackIndex = 0;
+
+        // --- DOM 元素 ---
         const tableBody = document.getElementById('animeTableBody');
         const searchInput = document.getElementById('searchInput');
         const tagFilterContainer = document.getElementById('tagFilterContainer');
         const modal = document.getElementById('detailsModal');
         const modalTitle = document.getElementById('modalTitle');
-        const modalContent = document.getElementById('modal-content-details');
-        const closeBtn = document.querySelector("#detailsModal .close-btn");
-        
-        // State
-        let currentSort = { column: 'date', direction: 'desc' };
-        let selectedTags = [];
+        const modalContent = document.getElementById('modalContent');
+        const closeModalBtn = document.querySelector('.close-btn');
+        const audio = document.getElementById('backgroundMusic');
+        const musicInfo = document.getElementById('musicInfo');
 
-        // Modal Logic
-        function showModal(title, contentHTML) {
-            modalTitle.textContent = title;
-            modalContent.innerHTML = contentHTML;
-            modal.style.display = "block";
-        }
-        closeBtn.onclick = () => modal.style.display = "none";
-        window.onclick = (event) => { if (event.target == modal) modal.style.display = "none"; };
+        // --- 初始化加载 ---
+        document.addEventListener('DOMContentLoaded', () => {
+            initEventListeners();
+            loadAllData();
+        });
 
-        // Calculation Logic
-        const calculateRecommendationScore = (rec) => (rec.production * 0.3 + rec.plot * 0.4 + rec.character * 0.3).toFixed(2);
-        const calculateFinalScore = (recScore, adjScore) => (parseFloat(recScore) + adjScore).toFixed(2);
+        function initEventListeners() {
+            // 1. 搜索框
+            searchInput.addEventListener('keyup', () => renderTable());
 
-        // Render Logic
-        function renderTable() {
-            tableBody.innerHTML = '';
-            const filteredData = animeData.filter(anime => 
-                anime.name.toLowerCase().includes(searchInput.value.toLowerCase()) &&
-                (selectedTags.length === 0 || selectedTags.every(tag => anime.tags.includes(tag)))
-            );
-            
-            filteredData.sort((a, b) => {
-                const getVal = (item, column) => {
-                    switch (column) {
-                        case 'production': return item.recommendation.production;
-                        case 'plot': return item.recommendation.plot;
-                        case 'character': return item.recommendation.character;
-                        case 'recommendationScore': return calculateRecommendationScore(item.recommendation);
-                        case 'adjustmentScore': return item.adjustments.score;
-                        case 'finalScore': return calculateFinalScore(calculateRecommendationScore(item.recommendation), item.adjustments.score);
-                        case 'date': return new Date(item.date);
-                        default: return item[column];
-                    }
-                };
-                const aVal = getVal(a, currentSort.column);
-                const bVal = getVal(b, currentSort.column);
-                if (currentSort.direction === 'asc') return typeof aVal === 'string' ? aVal.localeCompare(bVal) : aVal - bVal;
-                else return typeof aVal === 'string' ? bVal.localeCompare(aVal) : bVal - aVal;
+            // 2. 表头排序 (修复PC排序的关键)
+            document.querySelectorAll('th[data-sort]').forEach(th => {
+                th.addEventListener('click', () => handleSort(th.dataset.sort));
             });
 
-            filteredData.forEach(anime => {
-                const recScore = calculateRecommendationScore(anime.recommendation);
-                const finalScore = calculateFinalScore(recScore, anime.adjustments.score);
-                const adj = anime.adjustments;
-                const adjHTML = `<p><strong>争议内容:</strong> ${adj.controversy||'无'}</p><p><strong>内核深度:</strong> ${adj.depth||'无'}</p><p><strong>社会影响:</strong> ${adj.impact||'无'}</p><p><strong>艺术表达:</strong> ${adj.artistry||'无'}</p>`;
+            // 3. 表格内部点击 (事件委托，修复引号导致的代码错误)
+            tableBody.addEventListener('click', (e) => {
+                const target = e.target.closest('.score-link');
+                if (target) {
+                    const index = target.dataset.index;
+                    const type = target.dataset.type;
+                    const item = currentFilteredData[index];
+                    if(item) openModal(item, type);
+                }
+            });
+
+            // 4. 模态框关闭
+            closeModalBtn.addEventListener('click', () => modal.style.display = 'none');
+            window.addEventListener('click', (e) => { if(e.target === modal) modal.style.display = 'none'; });
+
+            // 5. 媒体控制
+            document.getElementById('prevBgBtn').onclick = () => changeBg(-1);
+            document.getElementById('nextBgBtn').onclick = () => changeBg(1);
+            document.getElementById('playPauseBtn').onclick = toggleMusic;
+            document.getElementById('nextTrackBtn').onclick = () => changeTrack(1);
+            audio.onended = () => changeTrack(1);
+        }
+
+        function loadAllData() {
+            Promise.all([
+                fetch('data/animeData.json').then(r => r.json()),
+                fetch('data/musicData.json').then(r => r.json()),
+                fetch('data/backgrounds.json').then(r => r.json())
+            ]).then(([d1, d2, d3]) => {
+                animeData = d1;
+                musicTracks = d2;
+                backgroundImages = d3;
+                
+                // 初始化渲染
+                renderTable();
+                renderTags();
+                initBackground();
+            }).catch(err => {
+                console.error(err);
+                document.querySelector('.container').innerHTML = `<h2 style="text-align:center;color:red">数据加载失败<br>请确保JSON文件在 data/ 文件夹下</h2>`;
+            });
+        }
+
+        // --- 核心逻辑：渲染表格 ---
+        function renderTable() {
+            // 1. 筛选
+            const term = searchInput.value.toLowerCase();
+            let data = animeData.filter(item => {
+                const matchesName = item.name.toLowerCase().includes(term);
+                const matchesTags = selectedTags.length === 0 || selectedTags.every(t => item.tags.includes(t));
+                return matchesName && matchesTags;
+            });
+
+            // 2. 排序
+            data.sort((a, b) => {
+                let valA = getSortValue(a, currentSort.column);
+                let valB = getSortValue(b, currentSort.column);
+                
+                // 如果是字符串，使用 localeCompare
+                if (typeof valA === 'string') {
+                    return currentSort.direction === 'asc' ? valA.localeCompare(valB) : valB.localeCompare(valA);
+                }
+                // 如果是数字
+                return currentSort.direction === 'asc' ? valA - valB : valB - valA;
+            });
+
+            // 保存当前数据供点击事件使用
+            currentFilteredData = data;
+
+            // 3. 生成 HTML
+            tableBody.innerHTML = '';
+            data.forEach((item, index) => {
+                const recScore = calcRecScore(item.recommendation);
+                const finalScore = (parseFloat(recScore) + item.adjustments.score).toFixed(2);
+                const adjScore = item.adjustments.score;
+                
+                // 修正分数的颜色
+                const adjColor = adjScore > 0 ? '#4ade80' : (adjScore < 0 ? '#f87171' : '#94a3b8');
+                const sign = adjScore > 0 ? '+' : '';
 
                 const row = document.createElement('tr');
+                // 添加动画延迟
+                row.style.animation = `slideUp 0.5s ease-out ${index * 0.05}s backwards`;
+                
                 row.innerHTML = `
-                    <td data-label="图片"><img src="${anime.image}" alt="${anime.name}" class="anime-img"></td>
-                    <td data-label="名称">${anime.name}</td>
-                    <td data-label="个人评分"><span class="score" onclick='showModal("${anime.name.replace(/"/g, '&quot;')} - 个人评价", "<p>${anime.personalEvaluation.replace(/"/g, '&quot;')}</p>")'>${anime.personalScore}</span></td>
-                    <td data-label="制作(30%)"><div><strong>${anime.recommendation.production}</strong><div class="details-comment">${anime.recommendation.productionComment}</div></div></td>
-                    <td data-label="剧情(40%)"><div><strong>${anime.recommendation.plot}</strong><div class="details-comment">${anime.recommendation.plotComment}</div></div></td>
-                    <td data-label="角色(30%)"><div><strong>${anime.recommendation.character}</strong><div class="details-comment">${anime.recommendation.characterComment}</div></div></td>
-                    <td data-label="推荐总分"><strong>${recScore}</strong></td>
-                    <td data-label="修正分数"><span class="score" onclick='showModal("${anime.name.replace(/"/g, '&quot;')} - 分数修正详情", ${JSON.stringify(adjHTML)})'>${adj.score > 0 ? '+' : ''}${adj.score}</span></td>
-                    <td data-label="最终得分"><strong>${finalScore}</strong></td>
-                    <td data-label="标签"><div class="tags">${anime.tags.map(tag => `<span>${tag}</span>`).join(' ')}</div></td>
-                    <td data-label="时间">${anime.date}</td>
-                    <td data-label="Bangumi">${anime.bangumiScore}</td>
+                    <td data-label="图片">
+                        <img src="${item.image}" alt="${item.name}" class="anime-img" loading="lazy">
+                    </td>
+                    <td data-label="名称">
+                        ${item.name}
+                    </td>
+                    <td data-label="个人评分">
+                        <span class="score-link" data-index="${index}" data-type="personal">
+                            ${item.personalScore}
+                        </span>
+                    </td>
+                    <td data-label="制作(30%)">
+                        <div class="td-content">
+                            <strong>${item.recommendation.production}</strong>
+                            <div class="comment-text">${item.recommendation.productionComment}</div>
+                        </div>
+                    </td>
+                    <td data-label="剧情(40%)">
+                        <div class="td-content">
+                            <strong>${item.recommendation.plot}</strong>
+                            <div class="comment-text">${item.recommendation.plotComment}</div>
+                        </div>
+                    </td>
+                    <td data-label="角色(30%)">
+                        <div class="td-content">
+                            <strong>${item.recommendation.character}</strong>
+                            <div class="comment-text">${item.recommendation.characterComment}</div>
+                        </div>
+                    </td>
+                    <td data-label="推荐总分">
+                        <strong>${recScore}</strong>
+                    </td>
+                    <td data-label="修正分数">
+                        <span class="score-link" style="color:${adjColor}" data-index="${index}" data-type="adjustment">
+                            ${sign}${adjScore}
+                        </span>
+                    </td>
+                    <td data-label="最终得分">
+                        <strong style="color: #fbbf24; font-size: 1.1em;">${finalScore}</strong>
+                    </td>
+                    <td data-label="标签">
+                        <div class="td-content">
+                            ${item.tags.map(t => `<span class="tag-badge">${t}</span>`).join('')}
+                        </div>
+                    </td>
+                    <td data-label="时间">${item.date}</td>
+                    <td data-label="Bangumi">${item.bangumiScore}</td>
                 `;
                 tableBody.appendChild(row);
             });
-            updateSortIndicators();
-        }
-        
-        function renderTagFilters() {
-            // Clear previous buttons but keep the span
-            const span = tagFilterContainer.querySelector('span');
-            tagFilterContainer.innerHTML = '';
-            if (span) tagFilterContainer.appendChild(span);
 
-            const allTags = [...new Set(animeData.flatMap(a => a.tags))];
-            allTags.forEach(tag => {
-                const button = document.createElement('button');
-                button.textContent = tag;
-                button.onclick = () => toggleTag(tag, button);
-                tagFilterContainer.appendChild(button);
-            });
+            updateSortIcons();
         }
 
-        const filterTable = () => renderTable();
-        function toggleTag(tag, button) {
-            const index = selectedTags.indexOf(tag);
-            if (index > -1) { selectedTags.splice(index, 1); button.classList.remove('active'); } 
-            else { selectedTags.push(tag); button.classList.add('active'); }
+        // 辅助：获取排序值
+        function getSortValue(item, col) {
+            switch(col) {
+                case 'production': return item.recommendation.production;
+                case 'plot': return item.recommendation.plot;
+                case 'character': return item.recommendation.character;
+                case 'recommendationScore': return parseFloat(calcRecScore(item.recommendation));
+                case 'adjustmentScore': return item.adjustments.score;
+                case 'finalScore': 
+                    return parseFloat(calcRecScore(item.recommendation)) + item.adjustments.score;
+                case 'date': return new Date(item.date).getTime(); // 转换为时间戳排序更准
+                default: return item[col];
+            }
+        }
+
+        // 辅助：计算推荐分
+        function calcRecScore(r) {
+            return (r.production * 0.3 + r.plot * 0.4 + r.character * 0.3).toFixed(2);
+        }
+
+        // --- 交互逻辑 ---
+        function handleSort(column) {
+            if (currentSort.column === column) {
+                currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
+            } else {
+                currentSort.column = column;
+                currentSort.direction = 'asc'; // 默认升序
+            }
             renderTable();
         }
 
-        function sortTable(column) {
-            if (currentSort.column === column) currentSort.direction = currentSort.direction === 'asc' ? 'desc' : 'asc';
-            else { currentSort.column = column; currentSort.direction = 'asc'; }
-            renderTable();
-        }
-        
-        function updateSortIndicators() {
-            document.querySelectorAll('#animeTable th[data-sort]').forEach(th => {
-                th.classList.remove('sorted-asc', 'sorted-desc');
-                const indicator = th.querySelector('.sort-indicator');
-                if (indicator) indicator.textContent = '↕';
+        function updateSortIcons() {
+            document.querySelectorAll('th[data-sort]').forEach(th => {
+                const icon = th.querySelector('.sort-indicator');
+                th.style.color = ''; // 重置颜色
+                icon.textContent = '↕';
+                
                 if (th.dataset.sort === currentSort.column) {
-                    th.classList.add(currentSort.direction === 'asc' ? 'sorted-asc' : 'sorted-desc');
-                    if(indicator) indicator.textContent = currentSort.direction === 'asc' ? '↑' : '↓';
+                    th.style.color = '#fff'; // 选中高亮
+                    icon.textContent = currentSort.direction === 'asc' ? '↑' : '↓';
                 }
             });
         }
-        
-        // Media Controls Logic
-        let currentBgIndex = 0, bgInterval, currentTrackIndex = 0;
-        const audio = document.getElementById('backgroundMusic');
-        const playPauseBtn = document.getElementById('playPauseBtn');
-        const nextTrackBtn = document.getElementById('nextTrackBtn');
-        const musicInfo = document.getElementById('musicInfo');
 
-        function changeBackground(direction) {
-            if (backgroundImages.length === 0) return;
-            currentBgIndex = (currentBgIndex + direction + backgroundImages.length) % backgroundImages.length;
-            document.body.style.backgroundImage = `url('${backgroundImages[currentBgIndex]}')`;
-        }
-        function startBgAutoplay() {
-            if (bgInterval) clearInterval(bgInterval);
-            bgInterval = setInterval(() => changeBackground(1), 20000);
-        }
-        function playPauseMusic() {
-            if (musicTracks.length === 0) return;
-            if (audio.paused) { if(!audio.src) changeTrack(0); audio.play(); playPauseBtn.textContent = '⏸️'; } 
-            else { audio.pause(); playPauseBtn.textContent = '▶️'; }
-            updateMusicInfo();
-        }
-        function changeTrack(direction) {
-            if (musicTracks.length === 0) return;
-            currentTrackIndex = (currentTrackIndex + direction + musicTracks.length) % musicTracks.length;
-            audio.src = musicTracks[currentTrackIndex].src;
-            if (playPauseBtn.textContent === '⏸️') audio.play();
-            updateMusicInfo();
-        }
-        function updateMusicInfo() {
-            if (musicTracks.length > 0) {
-                 musicInfo.textContent = audio.paused ? '暂停中' : musicTracks[currentTrackIndex].name;
-                 musicInfo.title = musicTracks[currentTrackIndex].name;
-            } else { musicInfo.textContent = '无音乐'; }
-        }
-        document.getElementById('prevBgBtn').onclick = () => { changeBackground(-1); startBgAutoplay(); };
-        document.getElementById('nextBgBtn').onclick = () => { changeBackground(1); startBgAutoplay(); };
-        playPauseBtn.onclick = playPauseMusic;
-        nextTrackBtn.onclick = () => changeTrack(1);
-        audio.onended = () => changeTrack(1);
-
-        // --- INITIAL LOAD ---
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('#animeTable th[data-sort]').forEach(header => {
-                header.addEventListener('click', () => sortTable(header.dataset.sort));
-            });
+        function renderTags() {
+            const allTags = [...new Set(animeData.flatMap(i => i.tags))];
+            tagFilterContainer.innerHTML = '';
+            // 添加“全部”或提示文本
+            tagFilterContainer.innerHTML = '<span style="color:var(--text-sub); font-size:14px;">筛选:</span>';
             
-            const fetchData = fetch('data/animeData.json').then(res => res.json());
-            const fetchMusic = fetch('data/musicData.json').then(res => res.json());
-            const fetchBackgrounds = fetch('data/backgrounds.json').then(res => res.json());
-            
-            Promise.all([fetchData, fetchMusic, fetchBackgrounds])
-                .then(([animeListData, musicListData, backgroundListData]) => {
-                    animeData = animeListData;
-                    musicTracks = musicListData;
-                    backgroundImages = backgroundListData;
+            allTags.forEach(tag => {
+                const btn = document.createElement('button');
+                btn.className = 'tag-btn';
+                btn.textContent = tag;
+                btn.onclick = () => {
+                    if (selectedTags.includes(tag)) {
+                        selectedTags = selectedTags.filter(t => t !== tag);
+                        btn.classList.remove('active');
+                    } else {
+                        selectedTags.push(tag);
+                        btn.classList.add('active');
+                    }
                     renderTable();
-                    renderTagFilters();
-                    changeBackground(0);
-                    startBgAutoplay();
-                    updateMusicInfo();
-                })
-                .catch(error => {
-                    console.error("加载数据失败:", error);
-                    document.querySelector('.container').innerHTML = '<h1>抱歉，数据加载失败，请检查`data`文件夹中的JSON文件是否存在且路径正确。</h1>';
-                });
-        });
+                };
+                tagFilterContainer.appendChild(btn);
+            });
+        }
+
+        function openModal(item, type) {
+            if (type === 'personal') {
+                modalTitle.textContent = `${item.name} - 个人评价`;
+                modalContent.innerHTML = `<p>${item.personalEvaluation}</p>`;
+            } else if (type === 'adjustment') {
+                modalTitle.textContent = `${item.name} - 修正详情`;
+                const adj = item.adjustments;
+                modalContent.innerHTML = `
+                    <p><strong style="color:#f87171">争议内容:</strong> ${adj.controversy || '无'}</p>
+                    <p><strong style="color:#60a5fa">内核深度:</strong> ${adj.depth || '无'}</p>
+                    <p><strong style="color:#a78bfa">社会影响:</strong> ${adj.impact || '无'}</p>
+                    <p><strong style="color:#fbbf24">艺术表达:</strong> ${adj.artistry || '无'}</p>
+                    <hr style="border-color:rgba(255,255,255,0.1)">
+                    <p>修正总值: <strong>${adj.score > 0 ? '+' : ''}${adj.score}</strong></p>
+                `;
+            }
+            modal.style.display = 'block';
+        }
+
+        // --- 媒体逻辑 ---
+        function initBackground() {
+            if(backgroundImages.length > 0) {
+                document.body.style.backgroundImage = `url('${backgroundImages[0]}')`;
+                startBgTimer();
+            }
+        }
+
+        function changeBg(dir) {
+            if(!backgroundImages.length) return;
+            clearInterval(bgInterval);
+            currentBgIndex = (currentBgIndex + dir + backgroundImages.length) % backgroundImages.length;
+            document.body.style.backgroundImage = `url('${backgroundImages[currentBgIndex]}')`;
+            startBgTimer();
+        }
+
+        function startBgTimer() {
+            bgInterval = setInterval(() => changeBg(1), 20000);
+        }
+
+        function toggleMusic() {
+            if(!musicTracks.length) return;
+            if(audio.paused) {
+                if(!audio.src) {
+                    audio.src = musicTracks[0].src;
+                    musicInfo.textContent = musicTracks[0].name;
+                }
+                audio.play();
+                document.getElementById('playPauseBtn').textContent = '⏸️';
+                musicInfo.textContent = musicTracks[currentTrackIndex].name;
+            } else {
+                audio.pause();
+                document.getElementById('playPauseBtn').textContent = '▶️';
+                musicInfo.textContent = '暂停中';
+            }
+        }
+
+        function changeTrack(dir) {
+            if(!musicTracks.length) return;
+            currentTrackIndex = (currentTrackIndex + dir + musicTracks.length) % musicTracks.length;
+            audio.src = musicTracks[currentTrackIndex].src;
+            audio.play();
+            document.getElementById('playPauseBtn').textContent = '⏸️';
+            musicInfo.textContent = musicTracks[currentTrackIndex].name;
+        }
+
     </script>
 </body>
 </html>
