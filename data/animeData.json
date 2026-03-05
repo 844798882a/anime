@@ -1,19 +1,19 @@
 [
   {
-    "name": "进击的巨人 最终季",
+    "name": "丹特丽安的书架",
     "image": "images/shingeki.jpg",
-    "personalScore": 9,
-    "personalEvaluation": "史诗般的结局，带来了深刻的思考和无与伦比的震撼。",
+    "personalScore": 10,
+    "personalEvaluation": "完美的剧情和个性鲜明的角色，并且拥有深刻的哲理。",
     "recommendation": {
-      "production": 9.5, "productionComment": "MAPPA制作精良，音乐与配音顶级。",
-      "plot": 9.0, "plotComment": "剧情复杂深刻，探讨战争与人性。",
-      "character": 8.5, "characterComment": "角色塑造有血有肉，转变令人印象深刻。"
+      "production": 8, "productionComment": "作画没有明显崩坏，风格独特，英伦画风令人舒适。",
+      "plot": 7, "plotComment": "以单元剧为主，剧情精彩，但部分伏笔没有给予解释，且结局仓促，原著小说腰斩。",
+      "character": 8, "characterComment": "角色个性鲜明，有令人印象深刻的地方。"
     },
     "adjustments": {
-      "controversy": "结局引发了巨大的争议。", "depth": "内核深度极高，探讨了自由、宿命等哲学命题。",
-      "impact": "在全球范围内产生了巨大的社会影响。", "artistry": "分镜和演出具有极高的艺术表达力。", "score": 0.5
+      "controversy": "无。", "depth": "有一定的反战倾向，基于一战后的历史背景。",
+      "impact": "无。", "artistry": "英伦风。", "score": 1
     },
-    "tags": ["热血", "奇幻", "战斗"], "date": "2023-11-04", "bangumiScore": 8.8
+    "tags": ["热血", "奇幻", "战斗"], "date": "2011-07-15", "bangumiScore": 7.1
   },
   {
     "name": "赛博朋克：边缘行者",
